@@ -1,0 +1,15 @@
+form-4: Create a lake in Dataplex and add a zone to your lake
+
+export ZONE=us-east4-c
+
+export KEY_1=domain_type
+
+export VALUE_1=source_data
+
+curl -LO raw.githubusercontent.com/quiccklabs/Labs_solutions/master/Create%20a%20Secure%20Data%20Lake%20on%20Cloud%20Storage%20Challenge%20Lab/quicklabarc119.sh
+
+sudo chmod +x quicklabarc119.sh
+
+./quicklabarc119.sh
+
+Dataplex > Manage > Customer Lake > Public > Entitis > Add Entity

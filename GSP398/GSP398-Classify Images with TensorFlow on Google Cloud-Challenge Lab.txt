@@ -1,0 +1,24 @@
+#====CLOUD SHELL====
+
+export ZONE=
+
+gcloud services enable \
+  compute.googleapis.com \
+  monitoring.googleapis.com \
+  logging.googleapis.com \
+  notebooks.googleapis.com \
+  aiplatform.googleapis.com \
+  artifactregistry.googleapis.com \
+  container.googleapis.com
+
+export NOTEBOOK_NAME="cnn-challenge"
+export MACHINE_TYPE="e2-standard-2"
+
+gcloud notebooks instances create $NOTEBOOK_NAME \
+  --location=$ZONE \
+  --vm-image-project=deeplearning-platform-release \
+  --vm-image-family=tf-2-11-cu113-notebooks \
+  --machine-type=$MACHINE_TYPE
+
+#====JUPITER==== 
+look at "cnn_challenge_lab.ipynb

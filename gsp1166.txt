@@ -1,0 +1,16 @@
+
+echo "   https://console.cloud.google.com/vertex-ai/publishers/google/model-garden/text-bison?project=$DEVSHELL_PROJECT_ID"
+
+echo "   https://console.cloud.google.com/vertex-ai/publishers/google/model-garden/text-bison?project=$DEVSHELL_PROJECT_ID"
+
+echo "   https://console.cloud.google.com/vertex-ai/publishers/google/model-garden/text-bison?project=$DEVSHELL_PROJECT_ID"
+
+==================
+
+open link 1 > open in vertex > agree & continue > prompt "hi"
+
+open link 2 > open notebook
+
+open link 3 > fine-tune
+
+DONE

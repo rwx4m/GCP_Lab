@@ -1,0 +1,55 @@
+TASK 1.
+CLOUD SHELL:
+curl https://storage.googleapis.com/cloud-training/gcpsec/labs/stackdriver-lab.tgz | tar -zxf -
+
+cd stackdriver-lab
+
+nano linux_startup.sh - replace "# install Ops Agent" with this code & save file:
+# install Ops Agent
+    curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+    sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+
+nano setup.sh - replace "# create vms" with this code & save file:
+# create vms
+gcloud compute instances create linux-server-$DEVSHELL_PROJECT_ID --service-account linux-servers@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --zone us-central1-c --metadata-from-file startup-script=linux_startup.sh --machine-type=e2-micro
+gcloud compute instances create windows-server-$DEVSHELL_PROJECT_ID --service-account windows-servers@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --image-project windows-cloud --image windows-server-2016-dc-core-v20240214 --zone us-central1-c --metadata-from-file windows-startup-script-ps1=windows_startup.ps1 --machine-type=e2-standard-2
+gcloud compute instances add-tags linux-server-$DEVSHELL_PROJECT_ID --zone us-central1-c --tags http-server
+
+sed -i 's/us-west1-b/us-central1-c/g' setup.sh
+
+./setup.sh
+
+Nav Menu - Logging - Log Router - Create Sink:
+Sink name: vm_logs - next
+Sink Service: Big Query dataset
+Big Query dataset: create new Big Query dataset
+	Dataset ID: project_logs
+Create Dataset
+NEXT
+Build inclusion filter - paste (resource.type="gce_instance") - Create Sink
+
+BACK TO LOG ROUTER - Create sink:
+Sink name: load_bal_logs - NEXT
+Sink service: Big Query dataset
+Big Query dataset: project_logs
+NEXT
+Build inclusion filter - paste (resource.type="http_load_balancer") - Create Sink
+
+Nav Menu - Big Query Studio - Expand project name & project_logs - open syslog_(1) - details tab - copy table ID
+table ID: qwiklabs-gcp-01-69e234cdebae.project_logs.syslog_20240908
+
+PASTE to SQL Query & RUN:
+SELECT
+  logName, resource.type, resource.labels.zone, resource.labels.project_id,
+FROM
+  `qwiklabs-gcp-01-69e234cdebae.project_logs.syslog_20240908`
+  
+Nav Menu - Logging - Logs Explorer - Select Create Metric (Drop down menu ACTION) - SET:
+Metric Type: Counter
+Log-based metric name: 403s
+Build filter: (PASTE & change qwiklabs... to Project_ID_1)
+resource.type="gce_instance"
+log_name="projects/qwiklabs-gcp-01-69e234cdebae/logs/syslog"
+then Create Metric
+
+DONE 100%

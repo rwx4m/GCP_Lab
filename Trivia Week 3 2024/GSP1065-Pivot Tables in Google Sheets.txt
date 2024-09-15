@@ -1,0 +1,45 @@
+TASK 1
+
+download spreadsheet file
+open spreadsheet app
+File > Import > upload > Import Data
+Name file: On the Rise Bakery Web Traffic
+Click Column B > Text Wrapping tab > wrap
+
+TASK 2
+
+G1: On the Rise Bakery Web Traffic
+G2: =ROUND(F2, -3)
+A29: Descriptive Statistics & merge with B29
+Format > Merge cells > Merge horizontally
+A30:(PASTE BELOW)
+	Average (Mean)
+	Median
+	Mode
+	Range
+	Standard Deviation
+
+TASK 3
+
+Select Tab DATA > Name Ranges > add
+Name: data
+type: 'Blog Visitors'!F2:F26
+
+B30: =AVERAGE(data)
+B31: =MEDIAN(data)
+B32: =MODE(G2:G26)
+B33: =MAX(data) - MIN(data)
+B34: =STDEV(data)
+
+TASK 5
+
+Add Sheet (+ dibawah) > Renama to To-Do List
+A1: Description
+A2: (PASTE BELOW)
+	Create Schedule
+	Create Budget
+	Design Charts
+
+select b2-b4 > Insert TAB > Checkbox
+
+DONE

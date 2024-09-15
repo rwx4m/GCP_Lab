@@ -1,0 +1,35 @@
+Task 1: Enable the DLP API
+APIs & Services - Enable APIs and Services - SEARCH(Cloud Data Loss Prevention (DLP) API - MUST be ENABLE
+
+Task 2:
+on Cloud Shell:
+
+export GCLOUD_PROJECT=$DEVSHELL_PROJECT_ID
+
+git clone https://github.com/GoogleCloudPlatform/nodejs-docs-samples
+
+cd nodejs-docs-samples/dlp
+
+npm install @google-cloud/dlp
+npm install yargs
+npm install mime
+
+Task 3:
+
+node inspectString.js $GCLOUD_PROJECT "My email address is joe@example.com."
+
+node inspectString.js $GCLOUD_PROJECT "My phone number is 555-555-5555."
+
+node deidentifyWithMask.js $GCLOUD_PROJECT "My phone number is 555-555-5555."
+
+(DOWNLOAD IMAGE & save as dlp-input.png)
+
+export GCLOUD_PROJECT=$DEVSHELL_PROJECT_ID
+
+On Cloud Shell, More (three verticals dots) - upload dlp-input.png as file
+
+node redactImage.js $GCLOUD_PROJECT ~/dlp-input.png "" EMAIL_ADDRESS ~/dlp-redacted.png
+
+(SKIP ERROR)
+
+LAB DONE

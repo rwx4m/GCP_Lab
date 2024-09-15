@@ -1,0 +1,154 @@
+copy Project Number on Dashboard:
+649032040796
+
+IAM & Admin - IAM - Select Grant Access:
+New Principals: (Project Number)-compute@developer.gserviceaccount.com
+Role: Search & select EDITOR
+then SAVE
+
+Cloud Shell:
+paste & run 1st to shell before open editor.
+gcloud projects get-iam-policy $DEVSHELL_PROJECT_ID \
+--format=json >./policy.json
+
+Select Open Editor (Cloud Shell) - Policy.json - paste this code after ({):
+  "auditConfigs": [
+    {
+       "service": "allServices",
+       "auditLogConfigs": [
+          { "logType": "ADMIN_READ" },
+          { "logType": "DATA_READ"  },
+          { "logType": "DATA_WRITE" }
+       ]
+    }
+ ],
+ 
+go to terminal & run this:
+gcloud projects set-iam-policy $DEVSHELL_PROJECT_ID \
+./policy.json
+
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+echo "this is a sample file" > sample.txt
+gsutil cp sample.txt gs://$DEVSHELL_PROJECT_ID
+gcloud compute networks create mynetwork --subnet-mode=auto
+gcloud compute instances create default-us-vm \
+--machine-type=e2-micro \
+--zone=us-east4-c --network=mynetwork
+
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID
+
+Logging - Logs Explorer - paste & run this to query:
+logName = ("projects/qwiklabs-gcp-03-62ed26721765/logs/cloudaudit.googleapis.com%2Factivity")
+
+(OPTIONAL for Audit) AUDIT using this code on Cloud Shell:
+gcloud logging read \
+"logName=projects/$DEVSHELL_PROJECT_ID/logs/cloudaudit.googleapis.com%2Factivity \
+AND protoPayload.serviceName=storage.googleapis.com \
+AND protoPayload.methodName=storage.buckets.delete"
+
+on Query builder, paste & run this code:
+logName = ("projects/[PROJECT_ID]/logs/cloudaudit.googleapis.com%2Factivity")
+click Actions - Create Sink:
+Sink Name: AuditLogsExport - NEXT
+Sink Service: BigQuery dataset
+BigQuery dataset: create new:
+	Dataset id: auditlogs_dataset
+	CREATE Dataset
+Build inclusion: logName = ("projects/qwiklabs-gcp-03-62ed26721765/logs/cloudaudit.googleapis.com%2Factivity")
+CREATE Sink
+
+cloud shell, paste & run:
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+gsutil mb gs://$DEVSHELL_PROJECT_ID-test
+echo "this is another sample file" > sample2.txt
+gsutil cp sample.txt gs://$DEVSHELL_PROJECT_ID-test
+gcloud compute instances delete --zone=us-east4-c \
+--delete-disks=all default-us-vm
+(When Prompted, enter Y)
+
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID-test
+
+cloud shell:
+gcloud compute instances create default-us-vm \
+--zone=us-east4-c --network=mynetwork
+
+gcloud compute instances delete --zone=us-east4-c \
+--delete-disks=all default-us-vm
+(enter Y)
+
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+gsutil mb gs://$DEVSHELL_PROJECT_ID-test
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID
+gsutil rm -r gs://$DEVSHELL_PROJECT_ID-test
+
+on Queryeditor paste & run:
+#standardSQL
+SELECT
+  timestamp,
+  resource.labels.instance_id,
+  protopayload_auditlog.authenticationInfo.principalEmail,
+  protopayload_auditlog.resourceName,
+  protopayload_auditlog.methodName
+FROM
+`auditlogs_dataset.cloudaudit_googleapis_com_activity_*`
+WHERE
+  PARSE_DATE('%Y%m%d', _TABLE_SUFFIX) BETWEEN
+  DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AND
+  CURRENT_DATE()
+  AND resource.type = "gce_instance"
+  AND operation.first IS TRUE
+  AND protopayload_auditlog.methodName = "v1.compute.instances.delete"
+ORDER BY
+  timestamp,
+  resource.labels.instance_id
+LIMIT
+  1000
+  
+AGAIN:
+
+#standardSQL
+SELECT
+  timestamp,
+  resource.labels.bucket_name,
+  protopayload_auditlog.authenticationInfo.principalEmail,
+  protopayload_auditlog.resourceName,
+  protopayload_auditlog.methodName
+FROM
+`auditlogs_dataset.cloudaudit_googleapis_com_activity_*`
+WHERE
+  PARSE_DATE('%Y%m%d', _TABLE_SUFFIX) BETWEEN
+  DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AND
+  CURRENT_DATE()
+  AND resource.type = "gcs_bucket"
+  AND protopayload_auditlog.methodName = "storage.buckets.delete"
+ORDER BY
+  timestamp,
+  resource.labels.instance_id
+LIMIT
+  1000
+  
+AGAIN:
+
+#standardSQL
+SELECT
+  timestamp,
+  resource.labels.bucket_name,
+  protopayload_auditlog.authenticationInfo.principalEmail,
+  protopayload_auditlog.resourceName,
+  protopayload_auditlog.methodName
+FROM
+`auditlogs_dataset.cloudaudit_googleapis_com_activity_*`
+WHERE
+  PARSE_DATE('%Y%m%d', _TABLE_SUFFIX) BETWEEN
+  DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AND
+  CURRENT_DATE()
+  AND resource.type = "gcs_bucket"
+  AND protopayload_auditlog.methodName = "storage.buckets.delete"
+ORDER BY
+  timestamp,
+  resource.labels.instance_id
+LIMIT
+  1000
+
+DONE 100%

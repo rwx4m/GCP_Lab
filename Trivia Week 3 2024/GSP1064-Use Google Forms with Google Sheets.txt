@@ -1,0 +1,30 @@
+TASK 1
+Open GDrive > New > GForms > Blank Form
+Name form & Question: On the Rise Bakery Survey
+Description: No_Need
+
+Q1 name: First Name (required)
+Q1 type: Short answer
+DUPLICATE
+Q2 name: Last Name (required)
+Q2 type: Short answer
+DUPLICATE
+Q3 name: Email Address
+Q3 type: short answer
+Click Add Question (+) icon
+Q4 name: What are your favorite items to buy at a bakery? (Choose up to three)
+Q4 type: Checkboxes
+Q4 CB:
+Muffin
+Donuts
+Donut Holes
+Plain Bagel
+Bagel with Egg and Cheese
+Q5 name: What time do you expect a bakery to open/close?
+Q5 type: short answer
+
+
+TASK 2-5
+In GForm > select Responses > link to sheet > Create New
+Duplicate sheet
+File > import > upload > File > Replace spreadsheet

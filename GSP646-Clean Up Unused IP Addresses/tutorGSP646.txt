@@ -1,0 +1,6 @@
+export ZONE=us-central1-f
+export REG=us-central1
+
+(upload file gsp646.sh)
+sudo chmod +x gsp646.sh
+./gsp646.sh

@@ -1,0 +1,140 @@
+gcloud services enable databasemigration.googleapis.com
+gcloud services enable servicenetworking.googleapis.com
+
+CE - VM Instance - postgresql-vm -> SSH
+sudo apt update
+sudo apt install postgresql-13-pglogical
+
+sudo nano /etc/postgresql/13/main/postgresql.conf
+Alt+/
+# Add settings for extensions here
+shared_preload_libraries = 'pglogical'
+wal_level = 'logical'
+wal_sender_timeout = 0
+max_replication_slots = 10
+max_wal_senders = 10
+max_worker_processes = 10
+listen_addresses = '*'
+
+sudo nano /etc/postgresql/13/main/pg_hba.conf
+Alt+/
+host    all             all               0.0.0.0/0             md5
+
+sudo su - postgres
+psql
+
+postgres=# CREATE USER replication_admin PASSWORD 'DMS_1s_cool!';
+postgres=# ALTER DATABASE orders OWNER TO replication_admin;
+postgres=# ALTER ROLE replication_admin WITH REPLICATION;
+
+\c postgres;
+GRANT USAGE ON SCHEMA pglogical TO replication_admin;
+GRANT ALL ON SCHEMA pglogical TO replication_admin;
+GRANT SELECT ON pglogical.tables TO replication_admin;
+GRANT SELECT ON pglogical.depend TO replication_admin;
+GRANT SELECT ON pglogical.local_node TO replication_admin;
+GRANT SELECT ON pglogical.local_sync_status TO replication_admin;
+GRANT SELECT ON pglogical.node TO replication_admin;
+GRANT SELECT ON pglogical.node_interface TO replication_admin;
+GRANT SELECT ON pglogical.queue TO replication_admin;
+GRANT SELECT ON pglogical.replication_set TO replication_admin;
+GRANT SELECT ON pglogical.replication_set_seq TO replication_admin;
+GRANT SELECT ON pglogical.replication_set_table TO replication_admin;
+GRANT SELECT ON pglogical.sequence_state TO replication_admin;
+GRANT SELECT ON pglogical.subscription TO replication_admin;
+
+\c orders;
+GRANT USAGE ON SCHEMA pglogical TO replication_admin;
+GRANT ALL ON SCHEMA pglogical TO replication_admin;
+GRANT SELECT ON pglogical.tables TO replication_admin;
+GRANT SELECT ON pglogical.depend TO replication_admin;
+GRANT SELECT ON pglogical.local_node TO replication_admin;
+GRANT SELECT ON pglogical.local_sync_status TO replication_admin;
+GRANT SELECT ON pglogical.node TO replication_admin;
+GRANT SELECT ON pglogical.node_interface TO replication_admin;
+GRANT SELECT ON pglogical.queue TO replication_admin;
+GRANT SELECT ON pglogical.replication_set TO replication_admin;
+GRANT SELECT ON pglogical.replication_set_seq TO replication_admin;
+GRANT SELECT ON pglogical.replication_set_table TO replication_admin;
+GRANT SELECT ON pglogical.sequence_state TO replication_admin;
+GRANT SELECT ON pglogical.subscription TO replication_admin;
+
+GRANT USAGE ON SCHEMA public TO replication_admin;
+GRANT ALL ON SCHEMA public TO replication_admin;
+GRANT SELECT ON public.distribution_centers TO replication_admin;
+GRANT SELECT ON public.inventory_items TO replication_admin;
+GRANT SELECT ON public.order_items TO replication_admin;
+GRANT SELECT ON public.products TO replication_admin;
+GRANT SELECT ON public.users TO replication_admin;
+\dt
+ALTER TABLE public.distribution_centers OWNER TO replication_admin;
+ALTER TABLE public.inventory_items OWNER TO replication_admin;
+ALTER TABLE public.order_items OWNER TO replication_admin;
+ALTER TABLE public.products OWNER TO replication_admin;
+ALTER TABLE public.users OWNER TO replication_admin;
+
+#CE-VM Instance(Save Information):
+VM instance name = postgresql-vm
+Internal IP = 10.138.0.2
+External IP = 35.203.141.235
+
+#GCONSOLE-SQL-Connection Profile-Create Profile
+DB engine = PostgreSQL
+Conn Profile Name = postgresql-vm
+IP = 10.138.0.2:5432
+username = replication_admin
+pass = DMS_1s_cool!
+Region = us-west1
+CREATE/Save
+
+#MIGRATION JOB-CREATE JOB
+job name=postgresql-vm-migration
+src conn=postgres-vm
+dest id=postgres73-7yt16
+pass=supersecret!
+DB ver= PostgreSQL 13
+Private IP=(ENABLE) Allocate & connect
+reg=us-west1
+conn method=VPC peering
+VPC=default
+src/dest=postgresQL/Cloud SQL for PostgreSQL
+migra type=continuous
+CLoud Edition=Enterprise
+machine type: 2 vcpu & 8GB memory
+CONFIG & CONT -> TEST JOB -> CREATE & START
+(if running) PROMOTE
+
+Go to SQL-select postgres73-7yt16-Connections-networking-Public IP-Add Net
+New Net Name: postgres-vm
+Net: 35.203.141.235
+SAVE
+
+SQL-Users-ADD User (select Cloud IAM)
+principal = (username)
+ADD
+
+SQL-Overview-(Connect to this instance) Open Cloud Shell
+gcloud sql connect [SQL instance] --user=postgres --quiet
+
+postgres=# \c orders;
+pass: supersecret!
+orders=# grant select on order_items to "username lab";
+
+SQL-Overview-Edit-Data Protection
+(ENABLE)Enable point-in-time recovery
+Days of logs: 1
+SAVE
+
+select (+) on cloud shell tab and paste:
+date -u --rfc-3339=ns | sed -r 's/ /T/; s/\.([0-9]{3}).*/\.\1Z/'
+
+SQL-Overview-SQL-Overview-(Connect to this instance) Open Cloud Shell
+pass: supersecret!
+\c orders;
+pass: (same)
+orders=> insert into distribution_centers values(-89.1111,25.1111,'Houston TX',11);
+\q
+
+CLOUD SHELL
+gcloud sql instances clone postgres73-7yt16 postgres-orders-pitr \
+ --point-in-time '2024-08-31T19:12:56.644Z'

@@ -1,0 +1,32 @@
+Google sheet > blank doc > Menu Data > Data connector > connect to BigQuery
+Select Project_ID > Public datasets
+> new_york_taxi_trips > tlc_yellow_trips_2022
+
+TASK 2
+
+select Function > COUNTIF > new sheet > CREATE
+
+(A1) paste & apply: =COUNTIF(tlc_yellow_trips_2022!airport_fee, "1")
+
+TASK 3
+Back to "tlc_yellow..."
+Select Chart > CREATE
+chart type: Pie chart
+label: payment_type (Check Aggregate)
+value: fare_amount (Sum)
+APPLY
+
+TASK 4
+back to main sheet
+Select Extract > CREATE
+Column: pickup_datetime, dropoff_datetime, trip_distance, fare_amount
+Sort: trip_distance (DESC)
+Row Limit: 10000
+APPLY
+
+TASK 5
+back to main sheet
+Select Calculated column > CREATE
+Name: GLEN
+Formula: =IF(fare_amount>0,tip_amount/fare_amount*100,0)
+ADD > APPLY

@@ -1,0 +1,37 @@
+TASK 1-8
+OPEN IDE & Terminal
+
+python --version
+python -c "import tensorflow;print(tensorflow.__version__)"
+pip3 install --upgrade pip
+
+Application Menu > File > New File
+add packages below to file with name "requirements.txt"
+google-cloud-logging
+tensorflow
+tensorflow-datasets
+numpy>=1.16.5,<1.23.0
+scipy
+protobuf==3.20.*
+
+/usr/bin/python3 -m pip install -r requirements.txt
+/usr/bin/python3 -m pip install -U pylint --user
+
+Make New File > model.py
+run on terminal > python model.py
+
+TASK 9
+Make New File > callback_model.py
+run on terminal > python callback_model.py
+
+Exercise 1:
+copy code from updated_model1.py to update_model.py > python updated_model.py
+
+Exercise 2:
+copy code from updated_model2.py to update_model.py > python updated_model.py
+
+Exercise 3:
+copy code from updated_model3.py to update_model.py > python updated_model.py
+
+Exercise 4:
+copy code from updated_model4.py to update_model.py > python updated_model.py

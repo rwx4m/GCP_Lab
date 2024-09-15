@@ -1,0 +1,15 @@
+form-2&1:
+2. Create a lake in Dataplex and add a zone to your lake
+1. Create a Cloud Storage bucket
+
+export ZONE=
+export KEY_1=domain_type
+
+export VALUE_1=source_data
+curl -LO raw.githubusercontent.com/quiccklabs/Labs_solutions/master/Create%20a%20Secure%20Data%20Lake%20on%20Cloud%20Storage%20Challenge%20Lab/quicklab.sh
+
+sudo chmod +x quicklab.sh
+
+./quicklab.sh
+
+Dataplex > tag template

@@ -5,10 +5,9 @@ Search -> `Vertex AI`
 Select Workbench -> INSTANCES -> Open JUPYTERLAB
 
 On Jupyter,
-Select Folder `generative-ai/languange/prompts`
 Open `intro_prompt_design.ipynb`
 
-Under the `Import Libraries` section
+Under the `Set Google Cloud project information and initialize Vertex AI SDK` section
 
 Copy & Paste Your Project ID & Region from lab
 

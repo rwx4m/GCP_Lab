@@ -2,7 +2,7 @@
 
 Search -> `Vertex AI`
 
-Select Workbench -> User-Managed Notebooks -> Open JUPYTERLAB
+Select Workbench -> INSTANCES -> Open JUPYTERLAB
 
 On Jupyter,
 Select Folder `generative-ai/languange/prompts`

@@ -108,3 +108,4 @@ gcloud compute instance-templates create fancy-fe-new \
 
 
 
+
